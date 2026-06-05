@@ -1,0 +1,11 @@
+target/
+*.class
+
+.docker-codex/
+Docker Desktop Installer.exe
+
+.idea/
+*.iml
+.vscode/
+
+*.log

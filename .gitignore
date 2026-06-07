@@ -3,6 +3,8 @@ target/
 
 .docker-codex/
 Docker Desktop Installer.exe
+uploads/
+sample.txt
 
 .idea/
 *.iml

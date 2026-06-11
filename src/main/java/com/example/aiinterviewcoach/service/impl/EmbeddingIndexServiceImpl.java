@@ -11,10 +11,10 @@ import com.example.aiinterviewcoach.mapper.DocumentChunkMapper;
 import com.example.aiinterviewcoach.mapper.DocumentMapper;
 import com.example.aiinterviewcoach.service.DashScopeEmbeddingClient;
 import com.example.aiinterviewcoach.service.EmbeddingIndexService;
+import com.example.aiinterviewcoach.util.VectorUtils;
 import com.example.aiinterviewcoach.vo.DocumentChunkEmbeddingVO;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -62,7 +62,7 @@ public class EmbeddingIndexServiceImpl implements EmbeddingIndexService {
                 embedding.setDocumentId(chunk.getDocumentId());
                 embedding.setKnowledgeBaseId(chunk.getKnowledgeBaseId());
                 embedding.setContent(chunk.getContent());
-                embedding.setEmbedding(toPgVectorString(vector));
+                embedding.setEmbedding(VectorUtils.toPgVectorString(vector));
                 embedding.setEmbeddingModel(dashScopeEmbeddingClient.getEmbeddingModel());
 
                 documentChunkEmbeddingMapper.insertEmbedding(embedding);
@@ -101,12 +101,6 @@ public class EmbeddingIndexServiceImpl implements EmbeddingIndexService {
         queryWrapper.eq(DocumentChunk::getDocumentId, documentId);
         queryWrapper.orderByAsc(DocumentChunk::getChunkIndex);
         return documentChunkMapper.selectList(queryWrapper);
-    }
-
-    private String toPgVectorString(List<Double> vector) {
-        return vector.stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(",", "[", "]"));
     }
 
     private void updateDocumentStatus(Document document, String status) {

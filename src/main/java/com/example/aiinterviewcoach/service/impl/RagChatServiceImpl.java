@@ -5,6 +5,7 @@ import com.example.aiinterviewcoach.dto.RagChatRequest;
 import com.example.aiinterviewcoach.dto.VectorSearchRequest;
 import com.example.aiinterviewcoach.exception.BusinessException;
 import com.example.aiinterviewcoach.mapper.KnowledgeBaseMapper;
+import com.example.aiinterviewcoach.service.ChatHistoryService;
 import com.example.aiinterviewcoach.service.DeepSeekChatClient;
 import com.example.aiinterviewcoach.service.RagChatService;
 import com.example.aiinterviewcoach.service.VectorSearchService;
@@ -30,13 +31,17 @@ public class RagChatServiceImpl implements RagChatService {
 
     private final DeepSeekChatClient deepSeekChatClient;
 
+    private final ChatHistoryService chatHistoryService;
+
     public RagChatServiceImpl(
             KnowledgeBaseMapper knowledgeBaseMapper,
             VectorSearchService vectorSearchService,
-            DeepSeekChatClient deepSeekChatClient) {
+            DeepSeekChatClient deepSeekChatClient,
+            ChatHistoryService chatHistoryService) {
         this.knowledgeBaseMapper = knowledgeBaseMapper;
         this.vectorSearchService = vectorSearchService;
         this.deepSeekChatClient = deepSeekChatClient;
+        this.chatHistoryService = chatHistoryService;
     }
 
     @Override
@@ -47,20 +52,27 @@ public class RagChatServiceImpl implements RagChatService {
             throw new BusinessException(ResultCode.BAD_REQUEST);
         }
 
+        Long sessionId = request.getSessionId() == null
+                ? chatHistoryService.createSession(knowledgeBaseId, request.getQuestion())
+                : request.getSessionId();
+        chatHistoryService.saveMessage(sessionId, "USER", request.getQuestion());
+
         List<VectorSearchResultVO> searchResults = vectorSearchService.search(
                 knowledgeBaseId,
                 buildVectorSearchRequest(request)
         );
 
         if (searchResults.isEmpty()) {
-            return buildResponse(INSUFFICIENT_CONTEXT_ANSWER, Collections.emptyList());
+            chatHistoryService.saveMessage(sessionId, "ASSISTANT", INSUFFICIENT_CONTEXT_ANSWER);
+            return buildResponse(sessionId, INSUFFICIENT_CONTEXT_ANSWER, Collections.emptyList());
         }
 
         String context = buildContext(searchResults);
         String prompt = buildPrompt(context, request.getQuestion());
         String answer = deepSeekChatClient.chat(prompt);
+        chatHistoryService.saveMessage(sessionId, "ASSISTANT", answer);
 
-        return buildResponse(answer, toReferences(searchResults));
+        return buildResponse(sessionId, answer, toReferences(searchResults));
     }
 
     private void ensureKnowledgeBaseExists(Long knowledgeBaseId) {
@@ -125,8 +137,9 @@ public class RagChatServiceImpl implements RagChatService {
         return reference;
     }
 
-    private RagChatResponse buildResponse(String answer, List<ReferenceVO> references) {
+    private RagChatResponse buildResponse(Long sessionId, String answer, List<ReferenceVO> references) {
         RagChatResponse response = new RagChatResponse();
+        response.setSessionId(sessionId);
         response.setAnswer(answer);
         response.setReferences(references);
         return response;

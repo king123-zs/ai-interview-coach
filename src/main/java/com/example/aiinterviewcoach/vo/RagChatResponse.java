@@ -4,9 +4,19 @@ import java.util.List;
 
 public class RagChatResponse {
 
+    private Long sessionId;
+
     private String answer;
 
     private List<ReferenceVO> references;
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
+    }
 
     public String getAnswer() {
         return answer;

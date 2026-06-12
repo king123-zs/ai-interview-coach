@@ -13,6 +13,8 @@ public class RagChatRequest {
     @Max(value = 20, message = "topK must be at most 20")
     private Integer topK;
 
+    private Long sessionId;
+
     public String getQuestion() {
         return question;
     }
@@ -27,5 +29,13 @@ public class RagChatRequest {
 
     public void setTopK(Integer topK) {
         this.topK = topK;
+    }
+
+    public Long getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(Long sessionId) {
+        this.sessionId = sessionId;
     }
 }

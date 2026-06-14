@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #172033;
+  background: #f5f7fb;
+  font-family:
+    "Segoe UI Variable", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: #f5f7fb;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(#e9edf4 1px, transparent 1px),
+    linear-gradient(90deg, #e9edf4 1px, transparent 1px),
+    #f5f7fb;
+  background-size: 32px 32px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+::selection {
+  color: #172033;
+  background: #c7d2fe;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #c7cfdb;
+  background-clip: padding-box;
+}
+
+@layer components {
+  .app-frame {
+    @apply min-h-screen md:grid md:grid-cols-[240px_minmax(0,1fr)];
+  }
+
+  .sidebar {
+    @apply flex border-b border-line bg-white md:sticky md:top-0 md:h-screen md:flex-col md:border-b-0 md:border-r;
+  }
+
+  .nav-item {
+    @apply flex h-11 shrink-0 items-center gap-3 rounded-lg px-3.5 text-sm font-medium text-muted transition-colors hover:bg-slate-50 hover:text-ink md:w-full;
+  }
+
+  .nav-item-active {
+    @apply bg-brand-soft text-brand hover:bg-brand-soft hover:text-brand;
+  }
+
+  .topbar {
+    @apply sticky top-0 z-20 flex h-[92px] items-center justify-between gap-4 border-b border-line bg-white/95 px-4 backdrop-blur sm:px-6;
+  }
+
+  .workspace-grid {
+    @apply grid min-h-[calc(100vh-92px)] grid-cols-1 gap-0 xl:grid-cols-[minmax(0,1fr)_320px];
+  }
+
+  .workspace-grid > main {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+
+  .reference-column {
+    @apply border-t border-line bg-white/60 p-4 sm:p-6 xl:border-l xl:border-t-0 xl:p-6;
+  }
+
+  .surface {
+    @apply rounded-lg border border-line bg-white shadow-panel;
+  }
+
+  .section-kicker {
+    @apply font-mono text-[10px] font-semibold uppercase text-brand;
+  }
+
+  .section-title {
+    @apply mt-1 font-display text-2xl font-semibold leading-tight text-ink;
+  }
+
+  .section-description {
+    @apply mt-2 max-w-2xl text-sm leading-6 text-muted;
+  }
+
+  .primary-button {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-white shadow-soft transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300;
+  }
+
+  .icon-button {
+    @apply grid size-10 place-items-center rounded-lg border border-line bg-white text-muted transition hover:border-slate-300 hover:text-ink;
+  }
+
+  .message-avatar {
+    @apply grid size-8 shrink-0 place-items-center rounded-lg;
+  }
+
+  .reference-card {
+    @apply rounded-lg border border-line bg-white p-4 shadow-soft;
+  }
+
+  .status-badge {
+    @apply rounded-md px-2 py-1 text-[10px] font-semibold;
+  }
+
+  .field-label {
+    @apply grid gap-2 text-sm font-semibold text-ink;
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-line bg-[#fbfcfe] px-3 py-2.5 text-sm font-normal text-ink outline-none transition placeholder:text-slate-400 focus:border-brand focus:bg-white;
+  }
+}
+
+.streaming-dots::after {
+  display: inline-block;
+  width: 1.4em;
+  overflow: hidden;
+  vertical-align: bottom;
+  content: "...";
+  animation: dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  from {
+    width: 0;
+  }
+  to {
+    width: 1.4em;
+  }
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    display: block;
+  }
+
+  .sidebar > div:first-child {
+    padding-bottom: 0.75rem;
+  }
+
+  .nav-item {
+    width: auto;
+  }
+
+  .topbar {
+    top: 0;
+    height: 78px;
+  }
+
+  .workspace-grid {
+    min-height: calc(100vh - 207px);
+  }
+}
